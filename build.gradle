@@ -1,0 +1,40 @@
+apply plugin: 'scala'
+apply plugin: 'groovy'
+
+repositories {
+    mavenCentral()
+    // Gatling libraries
+    maven { url 'http://repository.excilys.com/content/groups/public' }
+}
+
+dependencies {
+    // Gatling dependencies
+    compile 'io.gatling:gatling-app:2.0.1-SNAPSHOT'
+    compile 'io.gatling.highcharts:gatling-charts-highcharts:2.0.1'
+    compile 'org.scala-lang:scala-compiler:2.9'
+    compile 'org.scala-lang:scala-library:2.9'
+
+}
+
+sourceCompatibility = 1.7
+version = '1.0'
+
+
+task runLoadtest(type: JavaExec) {
+
+    systemProperty 'users', "${System.getProperty("users") ?: 500}"
+    systemProperty 'seconds', "${System.getProperty("seconds") ?: 30}"
+    systemProperty 'URL', "${System.getProperty("URL") ?: "https://demo.grydeske.com"}"
+    systemProperty 'logback.configurationFile', 'logback.xml'
+
+    classpath = sourceSets.main.runtimeClasspath + files('config/')
+    main = "io.gatling.app.Gatling"
+
+    args = Eval.me("['-s','sdu.DemoSimulation']")
+}
+
+
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.13'
+}
